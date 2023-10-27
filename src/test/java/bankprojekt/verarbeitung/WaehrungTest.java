@@ -4,8 +4,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Testklasse für die Klasse Waehrung.
+ */
 class WaehrungTest {
 
+    /**
+     * Test der Methode waehrungswechsel, mit Währung Euro nach Euro.
+     */
     @Test
     void waehrungswechselEuroNachEuro() {
         double betrag = 100;
@@ -14,6 +20,9 @@ class WaehrungTest {
         assertEquals(erwartet, ergebnis);
     }
 
+    /**
+     * Test der Methode waehrungswechsel, mit Währung Euro nach Nicht-Euro.
+     */
     @Test
     void waehrungswechselEuroNachNichtEuro() {
         double betrag = 100;
@@ -22,6 +31,9 @@ class WaehrungTest {
         assertEquals(erwartet, ergebnis);
     }
 
+    /**
+     * Test der Methode waehrungswechsel, mit Währung Nicht-Euro nach Euro.
+     */
     @Test
     void waehrungswechselNichtEuroNachEuro() {
         double betrag = 100;
@@ -30,6 +42,9 @@ class WaehrungTest {
         assertEquals(erwartet, ergebnis);
     }
 
+    /**
+     * Test der Methode waehrungswechsel, mit Währung Nicht-Euro nach Nicht-Euro.
+     */
     @Test
     void waehrungswechselNichtEuroNachNichtEuro() {
         double betrag = 100;
@@ -38,6 +53,9 @@ class WaehrungTest {
         assertEquals(erwartet, ergebnis);
     }
 
+    /**
+     * Test der Methode waehrungswechsel, mit 0.
+     */
     @Test
     void waehrungswechselMit0() {
         double betrag = 0;
@@ -46,6 +64,9 @@ class WaehrungTest {
         assertEquals(erwartet, ergebnis);
     }
 
+    /**
+     * Test der Methode waehrungswechsel, mit negativen Zahlen.
+     */
     @Test
     void waehrungswechselMitNegativenZahlen() {
         double betrag = -100;
