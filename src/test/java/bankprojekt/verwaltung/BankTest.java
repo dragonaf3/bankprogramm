@@ -115,12 +115,12 @@ class BankTest {
 
     //__________________________________________________________________________________________________________________
 
-    //getAlleKontoen Test
+    //getAlleKonten Test
 
     @Test
-    void getAlleKontoenTest() {
-        long kontonummer = bank.girokontoErstellen(kunde1);
-        long kontonummer2 = bank.sparbuchErstellen(kunde2);
+    void getAlleKontenTest() {
+        bank.girokontoErstellen(kunde1);
+        bank.sparbuchErstellen(kunde2);
         String expected = bank.getAlleKonten();
         assertEquals(expected, bank.getAlleKonten());
     }
