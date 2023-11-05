@@ -22,23 +22,27 @@ public class Bank {
         return bankleitzahl;
     }
 
+    public Map<Long, Konto> getKontenListe() {
+        return kontenListe;
+    }
+
     public long girokontoErstellen(Kunde inhaber) {
         long neueKontennummer = erstelleNeueKontonummer();
-        Girokonto girokonto = new Girokonto(inhaber,neueKontennummer,STANDARD_DISPO);
-        kontenListe.put(neueKontennummer,girokonto);
+        Girokonto girokonto = new Girokonto(inhaber, neueKontennummer, STANDARD_DISPO);
+        kontenListe.put(neueKontennummer, girokonto);
         return neueKontennummer;
     }
 
     public long sparbuchErstellen(Kunde inhaber) {
         long neueKontonummer = erstelleNeueKontonummer();
-        Sparbuch sparbuch = new Sparbuch(inhaber,neueKontonummer);
-        kontenListe.put(neueKontonummer,sparbuch);
+        Sparbuch sparbuch = new Sparbuch(inhaber, neueKontonummer);
+        kontenListe.put(neueKontonummer, sparbuch);
         return neueKontonummer;
     }
 
     public String getAlleKonten() {
         StringBuilder alleKonten = new StringBuilder();
-        for(Konto konto : kontenListe.values()) {
+        for (Konto konto : kontenListe.values()) {
             alleKonten.append(konto).append(System.lineSeparator());
         }
         return String.valueOf(alleKonten);
@@ -48,24 +52,14 @@ public class Bank {
         return new ArrayList<>(kontenListe.keySet());
     }
 
-    public boolean geldAbheben(long von, double betrag) {
-        if (kontenListe.get(von) != null) {
-            try {
-                return kontenListe.get(von).abheben(betrag);
-            } catch (GesperrtException gesperrtException) {
-                return false;
-            }
-        }
-        return false;
-        //TODO: Kontonummer nicht vorhanden
+    public boolean geldAbheben(long von, double betrag) throws UngueltigeKontonummerException, GesperrtException, IllegalArgumentException {
+        pruefeObKontonummerUngueltig(von);
+        return kontenListe.get(von).abheben(betrag);
     }
 
-    public void geldEinzahlen(long von, double betrag) {
-        if (kontenListe.get(von) != null) {
-            kontenListe.get(von).einzahlen(betrag);
-        }
-
-        //TODO: Kontonummer nicht vorhanden
+    public void geldEinzahlen(long von, double betrag) throws UngueltigeKontonummerException, IllegalArgumentException {
+        pruefeObKontonummerUngueltig(von);
+        kontenListe.get(von).einzahlen(betrag);
     }
 
     public boolean kontoLoeschen(long nummer) {
@@ -77,25 +71,34 @@ public class Bank {
         return false;
     }
 
-    public double getKontostand(long nummer) {
-        //TODO: Kontonummer nicht vorhanden
+    public double getKontostand(long nummer) throws UngueltigeKontonummerException {
+        pruefeObKontonummerUngueltig(nummer);
         return kontenListe.get(nummer).getKontostand();
     }
 
-    public boolean geldUeberweisen(long vonKontonr, long nachKontonr, double betrag, String verwendungszweck) throws GesperrtException{
-        //TODO: Kontonummer nicht vorhanden
+    public boolean geldUeberweisen(long vonKontonr, long nachKontonr, double betrag, String verwendungszweck) throws UngueltigeKontonummerException, NichtUeberweisungsfaehigException, GesperrtException {
+        pruefeObKontonummerUngueltig(vonKontonr);
+        pruefeObKontonummerUngueltig(nachKontonr);
+        pruefeObKontoUeberweisungsfähig(kontenListe.get(vonKontonr));
+        pruefeObKontoUeberweisungsfähig(kontenListe.get(nachKontonr));
+
         Konto vonKonto = kontenListe.get(vonKontonr);
         Konto nachKonto = kontenListe.get(nachKontonr);
 
-        if((vonKonto != null ) && (nachKonto != null)) {
-            if((vonKonto instanceof Ueberweisungsfaehig) && (nachKonto instanceof Ueberweisungsfaehig)) {
-                ((Ueberweisungsfaehig) vonKonto).ueberweisungAbsenden(betrag,nachKonto.getInhaber().getName(),nachKontonr,this.bankleitzahl,verwendungszweck);
-                ((Ueberweisungsfaehig) nachKonto).ueberweisungEmpfangen(betrag,vonKonto.getInhaber().getName(), vonKontonr, this.bankleitzahl, verwendungszweck);
-                return true;
-            }
-            return false;
+        boolean check;
+        check = ((Ueberweisungsfaehig) vonKonto).ueberweisungAbsenden(betrag, nachKonto.getInhaber().getName(), nachKontonr, this.bankleitzahl, verwendungszweck);
+
+        if (check) {
+            ((Ueberweisungsfaehig) nachKonto).ueberweisungEmpfangen(betrag, vonKonto.getInhaber().getName(), vonKontonr, this.bankleitzahl, verwendungszweck);
+            return true;
         }
         return false;
+    }
+
+    private void pruefeObKontoUeberweisungsfähig(Konto konto) throws NichtUeberweisungsfaehigException {
+        if (!(konto instanceof Ueberweisungsfaehig)) {
+            throw new NichtUeberweisungsfaehigException(konto.getKontonummer());
+        }
     }
 
     private long erstelleNeueKontonummer() {
@@ -105,5 +108,11 @@ public class Bank {
         }
         vergebeneKontonummern.add(neueKontonummer);
         return neueKontonummer;
+    }
+
+    private void pruefeObKontonummerUngueltig(long kontonummer) throws UngueltigeKontonummerException {
+        if (!vergebeneKontonummern.contains(kontonummer)) {
+            throw new UngueltigeKontonummerException(kontonummer);
+        }
     }
 }
