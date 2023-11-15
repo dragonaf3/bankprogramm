@@ -182,6 +182,22 @@ public class Bank {
         return false;
     }
 
+    /**
+     * <h3>Diese Methode ist hauptsächlich für Testzwecke gedacht.</h3
+     * <br>
+     * Fügt das gegebene Konto k (bei dem es sich genaugenommen um ein Mock-Objekt
+     * handeln sollte) in die Kontenliste der Bank ein und liefert dabei die von der Bank vergebene
+     * Kontonummer zurück.
+     *
+     * @param k das einzufügende Konto
+     * @return die von der Bank vergebene Kontonummer
+     */
+    public long mockEinfuegen(Konto k) {
+        long neueKontonummer = erstelleNeueKontonummer();
+        kontenListe.put(neueKontonummer, k);
+        return neueKontonummer;
+    }
+
     private void pruefeObKontoUeberweisungsfaehig(Konto konto) throws NichtUeberweisungsfaehigException {
         if (!(konto instanceof Ueberweisungsfaehig)) {
             throw new NichtUeberweisungsfaehigException(konto.getKontonummer());
