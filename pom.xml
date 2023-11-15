@@ -5,7 +5,7 @@
 
     <groupId>htw-berlin</groupId>
     <artifactId>bankprogramm</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.6-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>bankprogramm</name>
@@ -26,6 +26,21 @@
             <version>32.1.2-jre</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.decimal4j/decimal4j -->
+        <dependency>
+            <groupId>org.decimal4j</groupId>
+            <artifactId>decimal4j</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.7.0</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -34,17 +49,10 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.decimal4j/decimal4j -->
-        <dependency>
-            <groupId>org.decimal4j</groupId>
-            <artifactId>decimal4j</artifactId>
-            <version>1.0.3</version>
-        </dependency>
-
-
     </dependencies>
 
     <build>
+
         <plugins>
 
             <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
@@ -97,10 +105,11 @@
                 <version>3.3.0</version>
                 <executions>
                     <execution>
-                        <id>generate-jar</id>
+                        <id>generate-jarAndTestJar</id>
                         <phase>package</phase>
                         <goals>
                             <goal>jar</goal>
+                            <goal>test-jar</goal>
                         </goals>
                     </execution>
                 </executions>
