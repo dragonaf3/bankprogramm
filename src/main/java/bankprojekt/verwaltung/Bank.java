@@ -44,7 +44,6 @@ public class Bank {
     Map<Long, Konto> getKontenListe() {
         return kontenListe;
     }
-    //TODO: private setzen
 
     /**
      * Erstellt ein neues Girokonto für den angegebenen Kunden.
