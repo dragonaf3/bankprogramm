@@ -183,8 +183,7 @@ public class Bank {
     }
 
     /**
-     * <h3>Diese Methode ist hauptsächlich für Testzwecke gedacht.</h3
-     * <br>
+     * Diese Methode ist hauptsächlich für Testzwecke gedacht.
      * Fügt das gegebene Konto k (bei dem es sich genaugenommen um ein Mock-Objekt
      * handeln sollte) in die Kontenliste der Bank ein und liefert dabei die von der Bank vergebene
      * Kontonummer zurück.
