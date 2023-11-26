@@ -76,13 +76,12 @@ class BankTest {
     @Test
     void testGeldUeberweisenErfolgreich() throws UngueltigeKontonummerException, NichtUeberweisungsfaehigException, GesperrtException {
         // Vorbereiten der Testdaten
-        long vonKontonr = 1, nachKontonr = 2;
         double betrag = 100.0;
         String verwendungszweck = "Testüberweisung";
 
         // Hinzufügen der Mock-Konten zur Bank
-        bank.mockEinfuegen(vonKontoMock);
-        bank.mockEinfuegen(nachKontoMock);
+        long vonKontonr = bank.mockEinfuegen(vonKontoMock);
+        long nachKontonr = bank.mockEinfuegen(nachKontoMock);
 
         // Definieren des Verhaltens der Mock-Objekte
         when(vonKontoMock.getKontonummer()).thenReturn(vonKontonr);
@@ -108,13 +107,12 @@ class BankTest {
     @Test
     void testGeldUeberweisenFehlgeschlagen() throws UngueltigeKontonummerException, NichtUeberweisungsfaehigException, GesperrtException {
         // Vorbereiten der Testdaten
-        long vonKontonr = 1, nachKontonr = 2;
         double betrag = 100.0;
         String verwendungszweck = "Testüberweisung";
 
         // Hinzufügen der Mock-Konten zur Bank
-        bank.mockEinfuegen(vonKontoMock);
-        bank.mockEinfuegen(nachKontoMock);
+        long vonKontonr = bank.mockEinfuegen(vonKontoMock);
+        long nachKontonr = bank.mockEinfuegen(nachKontoMock);
 
         // Definieren des Verhaltens der Mock-Objekte
         when(vonKontoMock.getKontonummer()).thenReturn(vonKontonr);
@@ -138,13 +136,12 @@ class BankTest {
     @Test
     void testGeldUeberweisenFehlerfallUngueltigeKontonummer() throws GesperrtException {
         // Vorbereiten der Testdaten
-        long vonKontonr = 1, nachKontonr = 2;
         double betrag = 100.0;
         String verwendungszweck = "Testüberweisung";
 
         // Hinzufügen der Mock-Konten zur Bank
-        bank.mockEinfuegen(vonKontoMock);
-        bank.mockEinfuegen(nachKontoMock);
+        long vonKontonr = bank.mockEinfuegen(vonKontoMock);
+        long nachKontonr = bank.mockEinfuegen(nachKontoMock);
 
         // Definieren des Verhaltens der Mock-Objekte
         when(vonKontoMock.getKontonummer()).thenReturn(vonKontonr);
@@ -170,15 +167,14 @@ class BankTest {
     @Test
     void testGeldUeberweisenFehlerfallNichtUeberweisungsfaehigException() throws GesperrtException {
         // Vorbereiten der Testdaten
-        long vonKontonr = 1, nachKontonr = 2, vonKontoNichtUeberweisungsfaehig1 = 3, nachKontoNichtUeberweisungsfaehig2 = 4;
         double betrag = 100.0;
         String verwendungszweck = "Testüberweisung";
 
         // Hinzufügen der Mock-Konten zur Bank
-        bank.mockEinfuegen(vonKontoMock);
-        bank.mockEinfuegen(nachKontoMock);
-        bank.mockEinfuegen(vonKontoNichtUeberweisungsfaehigMock);
-        bank.mockEinfuegen(nachKontoNichtUeberweisungsfaehigMock);
+        long vonKontonr = bank.mockEinfuegen(vonKontoMock);
+        long nachKontonr = bank.mockEinfuegen(nachKontoMock);
+        long vonKontoNichtUeberweisungsfaehig1 = bank.mockEinfuegen(vonKontoNichtUeberweisungsfaehigMock);
+        long nachKontoNichtUeberweisungsfaehig2 = bank.mockEinfuegen(nachKontoNichtUeberweisungsfaehigMock);
 
         // Definieren des Verhaltens der Mock-Objekte
         when(vonKontoMock.getKontonummer()).thenReturn(vonKontonr);
@@ -205,15 +201,14 @@ class BankTest {
     @Test
     void testGeldUeberweisenFehlerfallGesperrtException() throws GesperrtException {
         // Vorbereiten der Testdaten
-        long vonKontonr = 1, nachKontonr = 2, vonKontoGesperrtNr = 3, nachKontoGesperrtNr = 4;
         double betrag = 100.0;
         String verwendungszweck = "Testüberweisung";
 
         // Hinzufügen der Mock-Konten zur Bank
-        bank.mockEinfuegen(vonKontoMock);
-        bank.mockEinfuegen(nachKontoMock);
-        bank.mockEinfuegen(vonKontoGesperrtMock);
-        bank.mockEinfuegen(nachKontoGesperrtMock);
+        long vonKontonr = bank.mockEinfuegen(vonKontoMock);
+        long nachKontonr = bank.mockEinfuegen(nachKontoMock);
+        long vonKontoGesperrtNr = bank.mockEinfuegen(vonKontoGesperrtMock);
+        long nachKontoGesperrtNr = bank.mockEinfuegen(nachKontoGesperrtMock);
 
         // Definieren des Verhaltens der Mock-Objekte
         when(vonKontoMock.getKontonummer()).thenReturn(vonKontonr);
@@ -244,8 +239,7 @@ class BankTest {
     @Test
     void testKontoLoeschenTrue() {
         //Vorbereiten der Testdaten
-        long kontonr = 1;
-        bank.mockEinfuegen(vonKontoMock);
+        long kontonr = bank.mockEinfuegen(vonKontoMock);
         when(vonKontoMock.getKontonummer()).thenReturn(kontonr);
 
         //Durchführen des Tests
@@ -262,8 +256,7 @@ class BankTest {
     @Test
     void testKontoLoeschenFalse() {
         //Vorbereiten der Testdaten
-        long kontonr = 1;
-        bank.mockEinfuegen(vonKontoMock);
+        long kontonr = bank.mockEinfuegen(vonKontoMock);
         when(vonKontoMock.getKontonummer()).thenReturn(kontonr);
 
         //Durchführen des Tests
