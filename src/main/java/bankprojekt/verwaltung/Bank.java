@@ -79,11 +79,9 @@ public class Bank {
      * @return alle Kontonummern und Kontostände der Bank als String
      */
     public String getAlleKonten() {
-        StringBuilder alleKonten = new StringBuilder();
-        for (Konto konto : kontenListe.values()) {
-            alleKonten.append(konto.getKontonummer()).append(" ").append(konto.getKontostand()).append(System.lineSeparator());
-        }
-        return String.valueOf(alleKonten);
+        return kontenListe.values().stream()
+                .map(konto -> konto.getKontonummer() + " " + konto.getKontostand())
+                .collect(Collectors.joining("\n"));
     }
 
     /**
