@@ -337,8 +337,7 @@ class BankTest {
         when(vonKontoMock.getKontostand()).thenReturn(10.00);
 
         String result;
-        String erwartet = "Mara Müster, Musterstraße2\n" +
-                "Max Muster, Musterstraße1";
+        String erwartet = new StringBuilder().append("Mara Müster, Musterstraße2").append(System.lineSeparator()).append("Max Muster, Musterstraße1").toString();
 
         //Durchführen des Tests
         result = bank.getKundenadressen();

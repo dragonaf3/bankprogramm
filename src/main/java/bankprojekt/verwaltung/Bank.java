@@ -81,7 +81,7 @@ public class Bank {
     public String getAlleKonten() {
         return kontenListe.values().stream()
                 .map(konto -> konto.getKontonummer() + " " + konto.getKontostand())
-                .collect(Collectors.joining("\n"));
+                .collect(Collectors.joining(System.lineSeparator()));
     }
 
     /**
@@ -229,7 +229,7 @@ public class Bank {
                 .distinct()
                 .sorted(Comparator.comparing(Kunde::getVorname))
                 .map(kunde -> kunde.getName() + ", " + kunde.getAdresse())
-                .collect(Collectors.joining("\n"));
+                .collect(Collectors.joining(System.lineSeparator()));
     }
 
     /**
