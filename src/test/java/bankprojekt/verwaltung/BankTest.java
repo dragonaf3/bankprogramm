@@ -4,6 +4,8 @@ import bankprojekt.verarbeitung.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -49,6 +51,20 @@ class BankTest {
         when(dummy4.getName()).thenReturn("Mata Lüster");
         when(dummy5.getName()).thenReturn("Mux Muxter");
         when(dummy6.getName()).thenReturn("Mux Müxter");
+
+        when(dummy.getVorname()).thenReturn("Max");
+        when(dummy2.getVorname()).thenReturn("Mara");
+        when(dummy3.getVorname()).thenReturn("Maxes");
+        when(dummy4.getVorname()).thenReturn("Mata");
+        when(dummy5.getVorname()).thenReturn("Mux");
+        when(dummy6.getVorname()).thenReturn("Mux");
+
+        when(dummy.getAdresse()).thenReturn("Musterstraße1");
+        when(dummy2.getAdresse()).thenReturn("Musterstraße2");
+        when(dummy3.getAdresse()).thenReturn("Musterstraße3");
+        when(dummy4.getAdresse()).thenReturn("Musterstraße4");
+        when(dummy5.getAdresse()).thenReturn("Musterstraße5");
+        when(dummy6.getAdresse()).thenReturn("Musterstraße6");
 
 
         // Definieren des Verhaltens für getInhaber() der Mock-Objekte
@@ -265,5 +281,97 @@ class BankTest {
         //Überprüfen der Ergebnisse
         assertFalse(result, "Konto sollte nicht gelöscht werden");
         assertTrue(bank.getKontenListe().containsKey(kontonr), "Konto sollte noch in der Kontenliste sein");
+    }
+
+    //Tests zur Methode pleitegeierSperren()
+
+    @Test
+    void testPleitegeierSperren() throws GesperrtException {
+        //Vorbereiten der Testdaten
+        long kontonr = bank.mockEinfuegen(vonKontoMock);
+        long kontonr2 = bank.mockEinfuegen(nachKontoMock);
+        when(vonKontoMock.getKontonummer()).thenReturn(kontonr);
+        when(nachKontoMock.getKontonummer()).thenReturn(kontonr2);
+        when(nachKontoMock.getKontostand()).thenReturn(-100.00);
+
+        //Durchführen des Tests
+        bank.pleitegeierSperren();
+
+        //Überprüfen der Ergebnisse
+        verify(vonKontoMock, never()).sperren();
+        verify(nachKontoMock).sperren();
+    }
+
+    //Tests zur Methode getKundenMitVollemKonto(double minimum)
+
+    @Test
+    void testGetKundenMitVollemKonto() {
+        //Vorbereiten der Testdaten
+        long kontonr = bank.mockEinfuegen(vonKontoMock);
+        long kontonr2 = bank.mockEinfuegen(nachKontoMock);
+        when(vonKontoMock.getKontonummer()).thenReturn(kontonr);
+        when(nachKontoMock.getKontonummer()).thenReturn(kontonr2);
+        when(nachKontoMock.getKontostand()).thenReturn(100.00);
+        when(vonKontoMock.getKontostand()).thenReturn(10.00);
+
+        List<Kunde> result;
+
+        //Durchführen des Tests
+        result = bank.getKundenMitVollemKonto(50.00);
+
+        //Überprüfen der Ergebnisse
+        assertEquals(1, result.size());
+        assertEquals(dummy2.getName(), result.get(0).getName());
+    }
+
+    //Tests zur Methode getKundenadressen()
+
+    @Test
+    void testGetKundenadressen() {
+        //Vorbereiten der Testdaten
+        long kontonr = bank.mockEinfuegen(vonKontoMock);
+        long kontonr2 = bank.mockEinfuegen(nachKontoMock);
+        when(vonKontoMock.getKontonummer()).thenReturn(kontonr);
+        when(nachKontoMock.getKontonummer()).thenReturn(kontonr2);
+        when(nachKontoMock.getKontostand()).thenReturn(100.00);
+        when(vonKontoMock.getKontostand()).thenReturn(10.00);
+
+        String result;
+        String erwartet = "Mara Müster, Musterstraße2\n" +
+                "Max Muster, Musterstraße1";
+
+        //Durchführen des Tests
+        result = bank.getKundenadressen();
+
+        //Überprüfen der Ergebnisse
+        assertEquals(erwartet, result);
+    }
+
+    //Tests zur Methode getKontonummernLuecken()
+
+    @Test
+    void testGetKontonummernLuecken() {
+        //Vorbereiten der Testdaten
+        long kontonr = bank.mockEinfuegen(vonKontoMock);
+        long kontonr2 = bank.mockEinfuegen(nachKontoMock);
+        long kontonr3 = bank.mockEinfuegen(vonKontoMock);
+        long kontonr4 = bank.mockEinfuegen(nachKontoMock);
+        when(vonKontoMock.getKontonummer()).thenReturn(kontonr);
+        when(nachKontoMock.getKontonummer()).thenReturn(kontonr2);
+        when(vonKontoMock.getKontonummer()).thenReturn(kontonr3);
+        when(nachKontoMock.getKontonummer()).thenReturn(kontonr4);
+        when(nachKontoMock.getKontostand()).thenReturn(100.00);
+        when(vonKontoMock.getKontostand()).thenReturn(10.00);
+
+        bank.kontoLoeschen(3);
+
+        List<Long> result;
+        List<Long> erwartet = List.of(3L);
+
+        //Durchführen des Tests
+        result = bank.getKontonummernLuecken();
+
+        //Überprüfen der Ergebnisse
+        assertEquals(erwartet, result);
     }
 }
