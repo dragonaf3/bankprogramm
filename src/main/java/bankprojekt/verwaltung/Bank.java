@@ -2,10 +2,9 @@ package bankprojekt.verwaltung;
 
 import bankprojekt.verarbeitung.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 /**
  * Diese Klasse repräsentiert eine Bank mit Kontenverwaltung
@@ -194,6 +193,76 @@ public class Bank {
         long neueKontonummer = erstelleNeueKontonummer();
         kontenListe.put(neueKontonummer, k);
         return neueKontonummer;
+    }
+
+    /**
+     * Diese Methode sperrt alle Konten, deren Kontostand im Minus ist.
+     */
+    public void pleitegeierSperren() {
+        kontenListe.values().stream()
+                .filter(konto -> konto.getKontostand() < 0)
+                .forEach(Konto::sperren);
+    }
+
+    /**
+     * Diese Methode liefert eine Liste aller Kunden,
+     * die auf einem Konto einen Kontostand haben, der mindestens minimum beträgt.
+     *
+     * @param minimum der minimale Kontostand
+     * @return Liste aller Kunden, die auf einem Konto einen Kontostand haben, der mindestens minimum beträgt
+     */
+    public List<Kunde> getKundenMitVollemKonto(double minimum) {
+        return kontenListe.values().stream()
+                .filter(konto -> konto.getKontostand() >= minimum)
+                .map(Konto::getInhaber)
+                .distinct() //Hat vielleicht mehrere Konten
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Diese Methode liefert die Namen und Adressen aller Kunden der Bank. Doppelte Kunden sollen
+     * dabei aussortiert werden. Sortieren Sie die Liste nach dem Vornamen.
+     *
+     * @return Namen und Adressen aller Kunden der Bank
+     */
+    public String getKundenadressen() {
+        return kontenListe.values().stream()
+                .map(Konto::getInhaber)
+                .distinct()
+                .sorted(Comparator.comparing(Kunde::getVorname))
+                .map(kunde -> kunde.getName() + ", " + kunde.getAdresse())
+                .collect(Collectors.joining("\n"));
+    }
+
+    /**
+     * Diese Methode liefert eine Liste aller freien Kontonummern, die im von Ihnen vergebenen Bereich
+     * liegen.
+     *
+     * @return Liste aller freien Kontonummern, die im vergebenen Bereich liegen
+     */
+    public List<Long> getKontonummernLuecken() {
+        long maxKontonummer = Collections.max(kontenListe.keySet());
+        return LongStream.range(1, maxKontonummer)
+                .filter(kontonummer -> !kontenListe.containsKey(kontonummer))
+                .boxed()
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Diese Methode liefert eine Liste aller Kunden, deren Gesamteinlage auf all ihren
+     * Konten mehr als minimum beträgt.
+     *
+     * @param minimum die minimale Gesamteinlage
+     * @return Liste aller Kunden, deren Gesamteinlage auf all ihren Konten mehr als minimum beträgt
+     */
+    public List<Kunde> getAlleReichenKunden(double minimum) {
+        return kontenListe.values().stream()
+                .collect(Collectors.groupingBy(Konto::getInhaber, Collectors.summingDouble(Konto::getKontostand)))
+                .entrySet().stream()
+                .filter(entry -> entry.getValue() > minimum)
+                .map(Map.Entry::getKey)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     private void pruefeObKontoUeberweisungsfaehig(Konto konto) throws NichtUeberweisungsfaehigException {
