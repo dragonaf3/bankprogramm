@@ -2,6 +2,11 @@ package bankprojekt.verarbeitung;
 
 import com.google.common.primitives.Doubles;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * stellt ein allgemeines Bank-Konto dar
  */
@@ -25,6 +30,18 @@ public abstract class Konto implements Comparable<Konto> {
      * die Währung des Kontos
      */
     private Waehrung waehrung;
+
+    /**
+     * Ein Depot, das Aktien und deren Anzahl speichert.
+     * Die Schlüssel sind Aktien und die Werte sind die Anzahl der Aktien im Depot.
+     */
+    private final Map<Aktie, Integer> depot = new HashMap<>();
+
+    /**
+     * Ein ReentrantLock, das zur Synchronisation von Transaktionen mit Aktien verwendet wird.
+     * Es wird verwendet, um sicherzustellen, dass gleichzeitige Änderungen an den Aktien im Depot korrekt gehandhabt werden.
+     */
+    private final ReentrantLock transaktionAktienLock = new ReentrantLock();
 
     /**
      * setzt den aktuellen Kontostand
@@ -248,6 +265,125 @@ public abstract class Konto implements Comparable<Konto> {
      */
     public String getKontostandFormatiert() {
         return String.format("%10.2f %s", this.kontostand, this.getWaehrung());
+    }
+
+    /**
+     * Erstellt einen Kaufauftrag für eine bestimmte Aktie.
+     *
+     * @param a            Die Aktie, die gekauft werden soll.
+     * @param anzahl       Die Anzahl der Aktien, die gekauft werden sollen.
+     * @param hoechstpreis Der Höchstpreis, den der Benutzer bereit ist zu zahlen.
+     * @return Ein Future, das den Kaufpreis der Aktie enthält, wenn der Kauf abgeschlossen ist.
+     * @throws IllegalArgumentException wenn die Anzahl oder der Hoechstpreis kleiner oder gleich 0 sind
+     * @throws NullPointerException     wenn die Aktie Null ist
+     */
+    public Future<Double> kaufauftrag(Aktie a, int anzahl, double hoechstpreis) throws IllegalArgumentException, NullPointerException {
+        if (anzahl <= 0) {
+            throw new IllegalArgumentException("Anzahl muss größer als 0 sein.");
+        }
+
+        if (hoechstpreis <= 0) {
+            throw new IllegalArgumentException("Höchstpreis muss größer als 0 sein.");
+        }
+
+        if (a == null) {
+            throw new NullPointerException("Aktie darf nicht null sein.");
+        }
+
+        CompletableFuture<Double> kaufAuftragAbgeschlossen = new CompletableFuture<>();
+        ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+
+        scheduledExecutorService.scheduleAtFixedRate(() -> {
+            double aktuellerKurs = a.getKurs();
+
+            if ((aktuellerKurs <= hoechstpreis) && (this.kontostand >= aktuellerKurs * anzahl)) {
+
+                transaktionAktienLock.lock();
+
+                try {
+                    double kaufpreis = aktuellerKurs * anzahl;
+                    this.kontostand -= kaufpreis;
+                    depot.put(a, anzahl);
+
+                    kaufAuftragAbgeschlossen.complete(kaufpreis); // Vervollständigung des Future mit dem Kaufpreis
+                } finally {
+                    transaktionAktienLock.unlock();
+
+                    scheduledExecutorService.shutdown();
+                }
+
+            }
+
+        }, 0, 1, TimeUnit.SECONDS);
+
+        return kaufAuftragAbgeschlossen;
+    }
+
+    /**
+     * Erstellt einen Verkaufsauftrag für eine bestimmte Aktie.
+     *
+     * @param wkn          Die WKN der Aktie, die verkauft werden soll.
+     * @param minimalpreis Der Mindestpreis, den der Benutzer bereit ist zu akzeptieren.
+     * @return Ein Future, das den Verkaufspreis der Aktie enthält, wenn der Verkauf abgeschlossen ist.
+     * @throws IllegalArgumentException wenn die WKN leer sind oder der Minimalpreis kleiner oder gleich 0 ist
+     * @throws NullPointerException     wenn die WKN null sind
+     */
+    public Future<Double> verkaufauftrag(String wkn, double minimalpreis) throws IllegalArgumentException, NullPointerException {
+        if (wkn.trim().isEmpty()) {
+            throw new IllegalArgumentException("WKN darf nicht leer sein.");
+        }
+
+        if (minimalpreis <= 0) {
+            throw new IllegalArgumentException("Minimalpreis muss größer als 0 sein.");
+        }
+
+        CompletableFuture<Double> verkaufAuftragAbgeschlossen = new CompletableFuture<>();
+        Aktie aktieZumVerkauf = holeAktieAusDepot(wkn);
+
+        if (aktieZumVerkauf != null) {
+            ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+
+            scheduledExecutorService.scheduleAtFixedRate(() -> {
+                double aktuellerKurs = aktieZumVerkauf.getKurs();
+
+                if (aktuellerKurs >= minimalpreis) {
+                    transaktionAktienLock.lock();
+
+                    try {
+                        double verkaufspreis = aktuellerKurs * depot.get(aktieZumVerkauf);
+                        this.kontostand += verkaufspreis;
+                        depot.remove(aktieZumVerkauf);
+
+                        verkaufAuftragAbgeschlossen.complete(verkaufspreis);
+                    } finally {
+                        transaktionAktienLock.unlock();
+
+                        scheduledExecutorService.shutdown();
+                    }
+
+                }
+
+            }, 0, 1, TimeUnit.SECONDS);
+
+            return verkaufAuftragAbgeschlossen;
+        }
+        verkaufAuftragAbgeschlossen.complete(0.0);
+        return verkaufAuftragAbgeschlossen;
+    }
+
+    /**
+     * Sucht eine Aktie im Depot anhand ihrer WKN.
+     *
+     * @param gesuchteWkn Die WKN der gesuchten Aktie.
+     * @return Die gesuchte Aktie, wenn sie im Depot gefunden wurde, sonst null.
+     */
+    private Aktie holeAktieAusDepot(String gesuchteWkn) {
+        for (Aktie aktie : depot.keySet()) {
+            if (aktie.getWkn().equals(gesuchteWkn)) {
+                return aktie;
+            }
+        }
+        return null;
     }
 
     /**
