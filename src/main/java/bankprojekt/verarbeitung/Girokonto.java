@@ -1,5 +1,7 @@
 package bankprojekt.verarbeitung;
 
+import java.io.Serial;
+
 /**
  * Ein Girokonto, d.h. ein Konto mit einem Dispo und der Fähigkeit,
  * Überweisungen zu senden und zu empfangen.
@@ -9,6 +11,9 @@ package bankprojekt.verarbeitung;
  * @author Doro
  */
 public class Girokonto extends Konto implements Ueberweisungsfaehig {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     /**
      * Wert, bis zu dem das Konto überzogen werden darf
      */

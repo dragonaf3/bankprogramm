@@ -2,6 +2,8 @@ package bankprojekt.verarbeitung;
 
 import com.google.common.primitives.Doubles;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -10,7 +12,10 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * stellt ein allgemeines Bank-Konto dar
  */
-public abstract class Konto implements Comparable<Konto> {
+public abstract class Konto implements Comparable<Konto>, Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     /**
      * der Kontoinhaber
      */

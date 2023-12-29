@@ -1,5 +1,6 @@
 package bankprojekt.verarbeitung;
 
+import java.io.Serial;
 import java.time.LocalDate;
 
 /**
@@ -10,6 +11,9 @@ import java.time.LocalDate;
  * @author Doro
  */
 public class Sparbuch extends Konto {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     /**
      * Zinssatz, mit dem das Sparbuch verzinst wird. 0,03 entspricht 3%
      */

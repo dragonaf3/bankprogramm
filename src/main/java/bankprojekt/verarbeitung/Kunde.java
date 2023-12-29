@@ -1,5 +1,7 @@
 package bankprojekt.verarbeitung;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -10,7 +12,9 @@ import java.util.Locale;
  * Kunde einer Bank
  * @author Dorothea Hubrich
  */
-public class Kunde implements Comparable<Kunde>{
+public class Kunde implements Comparable<Kunde>, Serializable {
+	@Serial
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Ein Musterkunde

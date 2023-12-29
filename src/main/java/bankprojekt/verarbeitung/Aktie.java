@@ -1,14 +1,20 @@
 package bankprojekt.verarbeitung;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+//TODO: Überarbeiten mittels erhaltenem Feedback
 
 /**
  * Die Klasse Aktie repräsentiert eine Aktie mit einem Namen, einer WKN und einem Kurs.
  * Der Kurs der Aktie wird regelmäßig aktualisiert.
  */
-public class Aktie {
+public class Aktie implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private String name;
     private String wkn;
     private double kurs;

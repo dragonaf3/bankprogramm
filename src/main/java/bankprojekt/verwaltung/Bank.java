@@ -2,6 +2,7 @@ package bankprojekt.verwaltung;
 
 import bankprojekt.verarbeitung.*;
 
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -9,11 +10,12 @@ import java.util.stream.LongStream;
 /**
  * Diese Klasse repräsentiert eine Bank mit Kontenverwaltung
  */
-public class Bank {
-
+public class Bank implements Cloneable, Serializable {
     private final long bankleitzahl;
     private final Map<Long, Konto> kontenListe;
     private static final double STANDARD_DISPO = 1000;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
 
     /**
@@ -263,6 +265,34 @@ public class Bank {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Klont das aktuelle Bankobjekt.
+     * Diese Methode verwendet Serialisierung, um eine tiefe Kopie des Bankobjektes zu ermöglichen.
+     *
+     * Das Bankobjekt wird zunächst in ein Byte-Array serialisiert und anschließend in ein neues Bankobjekt deserialisiert.
+     *
+     * @return eine tiefe Kopie des aktuellen Bankobjektes
+     */
+    @Override
+    public Bank clone() {
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+
+            oos.writeObject(this);
+            oos.flush();
+            byte[] bytes = bos.toByteArray();
+
+            ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+            ObjectInputStream ois = new ObjectInputStream(bis);
+
+            return (Bank) ois.readObject();
+
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException("Fehler beim kopieren der Bank!",e);
+        }
+    }
+
     private void pruefeObKontoUeberweisungsfaehig(Konto konto) throws NichtUeberweisungsfaehigException {
         if (!(konto instanceof Ueberweisungsfaehig)) {
             throw new NichtUeberweisungsfaehigException(konto.getKontonummer());
@@ -282,4 +312,5 @@ public class Bank {
             throw new UngueltigeKontonummerException(kontonummer);
         }
     }
+
 }

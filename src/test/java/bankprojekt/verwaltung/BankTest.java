@@ -80,6 +80,43 @@ class BankTest {
 
     }
 
+    // Tests zur Methode clone()
+
+    /**
+     * Dieser Test stellt sicher, dass die Methode eine tiefe Kopie der {@code Bank}-Instanz erstellt.
+     * Es wird überprüft, ob das geklonte Objekt dieselben Daten enthält wie das Original direkt nach dem Klonen
+     * und dass Änderungen an einem der Objekte (Original oder Klon) keinen Einfluss auf das andere haben.
+     * Da für den Test reale Instanzen benötigt werden, werden kein Mock Objekte verwendet.
+     *
+     * @throws Exception bei Fehlern während des Tests.
+     */
+    @Test
+    void testClone() throws UngueltigeKontonummerException {
+        // Vorbereiten der Testdaten
+        long vonKontoNr = bank.girokontoErstellen(new Kunde());
+        long nachKontoNr = bank.girokontoErstellen(new Kunde());
+
+        // Durchführen des Tests
+        Bank bankKopie = bank.clone();
+
+        // --Überprüfen der Ergebnisse--
+
+        // Gleichheit
+        assertEquals(bank.getAlleKonten(), bankKopie.getAlleKonten());
+
+        // Test zur Unabhängigkeit
+        bank.geldEinzahlen(vonKontoNr, 100);
+        assertNotEquals(bank.getKontostand(vonKontoNr), bankKopie.getKontostand(vonKontoNr));
+        assertEquals(100, bank.getKontostand(vonKontoNr));
+        assertEquals(0, bankKopie.getKontostand(vonKontoNr));
+
+        // Tests zur Unabhängigkeit der kopierten Bank
+        bankKopie.geldEinzahlen(nachKontoNr, 200);
+        assertNotEquals(bank.getKontostand(nachKontoNr), bankKopie.getKontostand(nachKontoNr));
+        assertEquals(0, bank.getKontostand(nachKontoNr));
+        assertEquals(200, bankKopie.getKontostand(nachKontoNr));
+    }
+
     // Tests zur Methode geldUeberweisen()
 
     /**
