@@ -199,7 +199,75 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
      * @throws GesperrtException        wenn das Konto gesperrt ist
      * @throws IllegalArgumentException wenn der betrag negativ oder unendlich oder NaN ist
      */
-    public abstract boolean abheben(double betrag) throws GesperrtException, IllegalArgumentException;
+    public final boolean abheben(double betrag) throws GesperrtException, IllegalArgumentException {
+        // Überprüfen, ob der Betrag gültig ist
+        validiereBetrag(betrag);
+        // Überprüfen, ob das Konto gesperrt ist
+        istGesperrt();
+
+        if (darfAbheben(betrag)) {
+            hebtAb(betrag);
+            handlungNachAbhebung(betrag);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Diese Methode ist eine abstrakte Methode, die in einer Unterklasse implementiert werden muss.
+     * Sie bestimmt, ob ein bestimmter Betrag vom Konto abgehoben werden darf.
+     *
+     * @param betrag Der Betrag, der abgehoben werden soll.
+     * @return true, wenn der Betrag abgehoben werden darf, false wenn nicht.
+     */
+    protected abstract boolean darfAbheben(double betrag);
+
+    /**
+     * Diese Methode wird nach einer erfolgreichen Abhebung aufgerufen.
+     * Sie ist als Hook-Methode konzipiert, d.h. sie tut standardmäßig nichts,
+     * kann aber in einer Unterklasse überschrieben werden, um spezielle Aktionen nach einer Abhebung durchzuführen.
+     *
+     * @param betrag Der Betrag, der abgehoben wurde.
+     */
+    protected void handlungNachAbhebung(double betrag) {
+        //Hook Methode
+    }
+
+    /**
+     * Überprüft den Betrag, der vom Konto abgehoben werden soll.
+     * Wenn der Betrag kleiner als 0 ist, oder keine Zahl (NaN) ist, oder unendlich ist, wird eine IllegalArgumentException ausgelöst.
+     *
+     * @param betrag Der zu überprüfende Betrag.
+     * @throws IllegalArgumentException wenn der Betrag kleiner als 0 ist, oder keine Zahl (NaN) ist, oder unendlich ist.
+     */
+    private void validiereBetrag(double betrag) throws IllegalArgumentException {
+        if (betrag < 0 || Double.isNaN(betrag) || Double.isInfinite(betrag)) {
+            throw new IllegalArgumentException("Betrag ungültig");
+        }
+    }
+
+    /**
+     * Überprüft, ob das Konto gesperrt ist.
+     * Wenn das Konto gesperrt ist, wird eine GesperrtException ausgelöst.
+     *
+     * @throws GesperrtException wenn das Konto gesperrt ist.
+     */
+    private void istGesperrt() throws GesperrtException {
+        if (this.isGesperrt()) {
+            throw new GesperrtException(this.getKontonummer());
+        }
+    }
+
+    /**
+     * Hebt den angegebenen Betrag vom Konto ab.
+     * Der Kontostand wird um den angegebenen Betrag reduziert.
+     *
+     * @param betrag Der abzuhebende Betrag.
+     */
+    private void hebtAb(double betrag) {
+        setKontostand(getKontostand() - betrag);
+    }
 
     /**
      * Mit dieser Methode wird der geforderte Betrag vom Konto in der gewünschten Waehrung abgehoben,

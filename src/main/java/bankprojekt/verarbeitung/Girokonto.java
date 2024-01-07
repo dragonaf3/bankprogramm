@@ -96,24 +96,22 @@ public class Girokonto extends Konto implements Ueberweisungsfaehig {
     }
 
     @Override
-    public boolean abheben(double betrag) throws GesperrtException, IllegalArgumentException {
-        if (betrag < 0 || Double.isNaN(betrag) || Double.isInfinite(betrag)) {
-            throw new IllegalArgumentException("Betrag ungültig");
-        }
-        if (this.isGesperrt()) {
-            throw new GesperrtException(this.getKontonummer());
-        }
-        if (getKontostand() - betrag >= -dispo) {
-            setKontostand(getKontostand() - betrag);
-            return true;
-        } else
-            return false;
-    }
-
-    @Override
     public void waehrungswechsel(Waehrung neu) {
         this.dispo = Waehrung.waehrungswechsel(this.dispo, this.getWaehrung(), neu);
         super.waehrungswechsel(neu);
     }
 
+    //Implementierung zur Template-Methode
+
+    /**
+     * Überprüft, ob ein bestimmter Betrag vom Konto abgehoben werden kann.
+     * Ein Betrag kann abgehoben werden, wenn der Kontostand nach der Abhebung größer oder gleich dem negativen Dispo ist.
+     *
+     * @param betrag der abgehoben werden soll
+     * @return true, wenn der Betrag abgehoben werden kann; false, wenn nicht
+     */
+    @Override
+    protected boolean darfAbheben(double betrag) {
+        return getKontostand() - betrag >= -dispo;
+    }
 }

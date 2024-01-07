@@ -62,32 +62,49 @@ public class Sparbuch extends Konto {
     }
 
     @Override
-    public boolean abheben(double betrag) throws GesperrtException, IllegalArgumentException {
-        if (betrag < 0 || Double.isNaN(betrag) || Double.isInfinite(betrag)) {
-            throw new IllegalArgumentException("Betrag ungültig");
-        }
-        if (this.isGesperrt()) {
-            GesperrtException e = new GesperrtException(this.getKontonummer());
-            throw e;
-        }
-        LocalDate heute = LocalDate.now();
-        if (heute.getMonth() != zeitpunkt.getMonth() || heute.getYear() != zeitpunkt.getYear()) {
-            this.bereitsAbgehoben = 0;
-        }
-        if (getKontostand() - betrag >= 0.50 &&
-                bereitsAbgehoben + betrag <= getWaehrung().euroInWaehrungUmrechnen(Sparbuch.ABHEBESUMME)) {
-            setKontostand(getKontostand() - betrag);
-            bereitsAbgehoben += betrag;
-            this.zeitpunkt = LocalDate.now();
-            return true;
-        } else
-            return false;
-    }
-
-    @Override
     public void waehrungswechsel(Waehrung neu) {
         this.bereitsAbgehoben = Waehrung.waehrungswechsel(this.bereitsAbgehoben, this.getWaehrung(), neu);
         super.waehrungswechsel(neu);
     }
 
+    //Implementierung zur Template-Methode
+
+    /**
+     * Überprüft, ob eine Abhebung erlaubt ist oder nicht.
+     *
+     * @param betrag Der Betrag, der abgehoben werden soll.
+     * @return true, wenn die Abhebung erlaubt ist, false andernfalls.
+     * <p>
+     * Diese Methode überprüft zunächst, ob der aktuelle Monat und das aktuelle Jahr sich von dem Monat und Jahr der letzten Abhebung unterscheiden.
+     * Wenn sie sich unterscheiden, wird der in diesem Monat bereits abgehobene Betrag auf 0 zurückgesetzt.
+     * <p>
+     * Dann überprüft sie zwei Bedingungen:
+     * 1. Ob der Kontostand nach der Abhebung größer oder gleich 0,50 wäre.
+     * 2. Ob der in diesem Monat einschließlich der neuen Abhebung abgehobene Gesamtbetrag kleiner oder gleich dem maximalen Abhebungslimit wäre.
+     * <p>
+     * Wenn beide Bedingungen erfüllt sind, gibt die Methode true zurück und erlaubt die Abhebung.
+     * Wenn eine der Bedingungen nicht erfüllt ist, gibt die Methode false zurück und verbietet die Abhebung.
+     */
+    @Override
+    protected boolean darfAbheben(double betrag) {
+        LocalDate heute = LocalDate.now();
+        if (heute.getMonth() != zeitpunkt.getMonth() || heute.getYear() != zeitpunkt.getYear()) {
+            this.bereitsAbgehoben = 0;
+        }
+        return getKontostand() - betrag >= 0.50 &&
+                bereitsAbgehoben + betrag <= getWaehrung().euroInWaehrungUmrechnen(Sparbuch.ABHEBESUMME);
+    }
+
+    /**
+     * Führt die Handlungen nach einer Abhebung durch.
+     *
+     * @param betrag Der Betrag, der abgehoben wurde.
+     *               <p>
+     *               Diese Methode erhöht den bereits abgehobenen Betrag um den abgehobenen Betrag und setzt den Zeitpunkt der letzten Abhebung auf das aktuelle Datum.
+     */
+    @Override
+    protected void handlungNachAbhebung(double betrag) {
+        bereitsAbgehoben += betrag;
+        this.zeitpunkt = LocalDate.now();
+    }
 }
