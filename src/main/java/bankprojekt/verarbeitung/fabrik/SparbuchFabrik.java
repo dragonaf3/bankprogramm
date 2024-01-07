@@ -1,4 +1,9 @@
-package bankprojekt.verarbeitung;
+package bankprojekt.verarbeitung.fabrik;
+
+import bankprojekt.verarbeitung.Konto;
+import bankprojekt.verarbeitung.Kunde;
+import bankprojekt.verarbeitung.Sparbuch;
+import bankprojekt.verarbeitung.fabrik.KontoFabrik;
 
 /**
  * Eine Fabrikklasse zur Erstellung von Sparbuch-Objekten.

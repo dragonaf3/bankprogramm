@@ -1,6 +1,8 @@
 package bankprojekt.verwaltung;
 
 import bankprojekt.verarbeitung.*;
+import bankprojekt.verarbeitung.fabrik.GirokontoFabrik;
+import bankprojekt.verarbeitung.fabrik.KontoFabrik;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

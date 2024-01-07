@@ -1,4 +1,7 @@
-package bankprojekt.verarbeitung;
+package bankprojekt.verarbeitung.fabrik;
+
+import bankprojekt.verarbeitung.Konto;
+import bankprojekt.verarbeitung.Kunde;
 
 /**
  * Abstrakte Klasse KontoFabrik zur Erstellung von Konten.

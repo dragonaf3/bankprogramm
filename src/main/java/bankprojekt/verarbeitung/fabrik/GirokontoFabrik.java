@@ -1,4 +1,9 @@
-package bankprojekt.verarbeitung;
+package bankprojekt.verarbeitung.fabrik;
+
+import bankprojekt.verarbeitung.Girokonto;
+import bankprojekt.verarbeitung.Konto;
+import bankprojekt.verarbeitung.Kunde;
+import bankprojekt.verarbeitung.fabrik.KontoFabrik;
 
 import static bankprojekt.verwaltung.Bank.STANDARD_DISPO;
 
