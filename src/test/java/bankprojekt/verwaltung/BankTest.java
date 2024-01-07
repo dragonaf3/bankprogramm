@@ -93,8 +93,8 @@ class BankTest {
     @Test
     void testClone() throws UngueltigeKontonummerException {
         // Vorbereiten der Testdaten
-        long vonKontoNr = bank.girokontoErstellen(new Kunde());
-        long nachKontoNr = bank.girokontoErstellen(new Kunde());
+        long vonKontoNr = bank.kontoErstellen(new GirokontoFabrik(), new Kunde());
+        long nachKontoNr = bank.kontoErstellen(new GirokontoFabrik(), new Kunde());
 
         // Durchführen des Tests
         Bank bankKopie = bank.clone();

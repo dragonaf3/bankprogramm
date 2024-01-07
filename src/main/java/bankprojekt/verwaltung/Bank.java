@@ -11,9 +11,12 @@ import java.util.stream.LongStream;
  * Diese Klasse repräsentiert eine Bank mit Kontenverwaltung
  */
 public class Bank implements Cloneable, Serializable {
+    /**
+     * Standard-Dispo für ein Girokonto, welche von der Bank vorgegeben ist
+     */
+    public static final double STANDARD_DISPO = 1000;
     private final long bankleitzahl;
     private final Map<Long, Konto> kontenListe;
-    private static final double STANDARD_DISPO = 1000;
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -47,33 +50,22 @@ public class Bank implements Cloneable, Serializable {
     }
 
     /**
-     * Erstellt ein neues Girokonto für den angegebenen Kunden.
+     * Erstellt ein neues Konto für einen gegebenen Kunden und fügt es zur Kontenliste der Bank hinzu.
      *
-     * @param inhaber der Inhaber des Kontos
-     * @return die neu vergebene Kontonummer des Girokontos zurück
-     * @throws IllegalArgumentException wenn der Inhaber null ist oder der angegebene Dispo negativ, bzw. NaN ist
+     * @param kontoFabrik Die Fabrik, die zur Erstellung des Kontos verwendet wird.
+     * @param inhaber     Der Kunde, für den das Konto erstellt wird.
+     * @return Die Kontonummer des neu erstellten Kontos.
+     * @throws IllegalArgumentException wenn der Inhaber null ist.
      */
-    public long girokontoErstellen(Kunde inhaber) throws IllegalArgumentException {
-        long neueKontennummer = erstelleNeueKontonummer();
-        Girokonto girokonto = new Girokonto(inhaber, neueKontennummer, STANDARD_DISPO);
-        kontenListe.put(neueKontennummer, girokonto);
-        return neueKontennummer;
-    }
-
-    /**
-     * Erstellt ein neues Sparbuch für den angegebenen Kunden.
-     *
-     * @param inhaber der Inhaber des Kontos
-     * @return die Kontonummer des neuen Sparbuchs
-     * @throws IllegalArgumentException wenn der Inhaber null ist oder der angegebene Dispo negativ, bzw. NaN ist
-     */
-    public long sparbuchErstellen(Kunde inhaber) throws IllegalArgumentException {
+    public long kontoErstellen(KontoFabrik kontoFabrik, Kunde inhaber) throws IllegalArgumentException {
+        if (inhaber == null) {
+            throw new IllegalArgumentException("Inhaber darf nicht null sein");
+        }
         long neueKontonummer = erstelleNeueKontonummer();
-        Sparbuch sparbuch = new Sparbuch(inhaber, neueKontonummer);
-        kontenListe.put(neueKontonummer, sparbuch);
+        Konto neuesKonto = kontoFabrik.kontoErstellen(inhaber, neueKontonummer);
+        kontenListe.put(neueKontonummer, neuesKonto);
         return neueKontonummer;
     }
-
 
     /**
      * Erstellt einen String von allen Kontonummern und den zugehörigen Kontoständen.
@@ -180,6 +172,8 @@ public class Bank implements Cloneable, Serializable {
         return false;
     }
 
+    //TODO: Entfernen
+
     /**
      * Diese Methode ist hauptsächlich für Testzwecke gedacht.
      * Fügt das gegebene Konto k (bei dem es sich genaugenommen um ein Mock-Objekt
@@ -268,7 +262,7 @@ public class Bank implements Cloneable, Serializable {
     /**
      * Klont das aktuelle Bankobjekt.
      * Diese Methode verwendet Serialisierung, um eine tiefe Kopie des Bankobjektes zu ermöglichen.
-     *
+     * <p>
      * Das Bankobjekt wird zunächst in ein Byte-Array serialisiert und anschließend in ein neues Bankobjekt deserialisiert.
      *
      * @return eine tiefe Kopie des aktuellen Bankobjektes
@@ -289,7 +283,7 @@ public class Bank implements Cloneable, Serializable {
             return (Bank) ois.readObject();
 
         } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException("Fehler beim kopieren der Bank!",e);
+            throw new RuntimeException("Fehler beim kopieren der Bank!", e);
         }
     }
 
