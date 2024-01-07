@@ -5,7 +5,7 @@ import static bankprojekt.verwaltung.Bank.STANDARD_DISPO;
 /**
  * Eine Fabrikklasse zur Erstellung von Girokonten-Objekten.
  */
-public class GirokontoFabrik implements KontoFabrik {
+public class GirokontoFabrik extends KontoFabrik {
 
     /**
      * Erstellt ein neues Girokonto mit dem Standard Dispo.

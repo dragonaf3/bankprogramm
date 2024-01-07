@@ -1,16 +1,17 @@
 package bankprojekt.verarbeitung;
 
 /**
- * Dieses Interface definiert eine Fabrik für Konten.
- * Es stellt eine Methode zur Verfügung, um ein Konto zu erstellen.
+ * Abstrakte Klasse KontoFabrik zur Erstellung von Konten.
+ * Diese Klasse dient als Vorlage für spezifische KontoFabriken.
  */
-public interface KontoFabrik {
+public abstract class KontoFabrik {
     /**
-     * Erstellt ein neues Konto für einen bestimmten Kunden.
+     * Abstrakte Methode zur Erstellung eines Kontos.
+     * Diese Methode muss in jeder konkreten Unterklasse implementiert werden.
      *
      * @param inhaber     Der Kunde, der das Konto besitzen wird.
      * @param kontonummer Die Kontonummer des zu erstellenden Kontos.
-     * @return Das neu erstellte Konto.
+     * @return Das erstellte Konto.
      */
-    Konto kontoErstellen(Kunde inhaber, long kontonummer);
+    public abstract Konto kontoErstellen(Kunde inhaber, long kontonummer);
 }

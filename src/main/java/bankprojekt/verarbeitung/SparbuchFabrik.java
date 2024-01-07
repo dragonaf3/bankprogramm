@@ -3,7 +3,7 @@ package bankprojekt.verarbeitung;
 /**
  * Eine Fabrikklasse zur Erstellung von Sparbuch-Objekten.
  */
-public class SparbuchFabrik implements KontoFabrik {
+public class SparbuchFabrik extends KontoFabrik {
 
     /**
      * Erstellt ein neues Sparbuch-Konto.
