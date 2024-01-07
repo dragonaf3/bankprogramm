@@ -21,12 +21,14 @@ class BankTest {
     //Konten welche überweisungsfähig sind
     private Girokonto vonKontoMock, nachKontoMock, vonKontoGesperrtMock, nachKontoGesperrtMock;
     private Kunde dummy, dummy2, dummy3, dummy4, dummy5, dummy6;
+    private KontoFabrik mockFabrikVonKonto, mockFabrikNachKonto, mockFabrikVonKontoNichtUeberweisungsfaehig, mockFabrikNachKontoNichtUeberweisungsfaehig, mockFabrikVonKontoGesperrt, mockFabrikNachKontoGesperrt;
 
     /**
      * Initialisierung der Mock-Objekte und der Bank vor jedem Test
      */
     @BeforeEach
     void setUp() {
+        //Erstellen der Bank Instanz
         bank = new Bank(12345);
 
         // Erstellen von Mock-Objekten für die Konten
@@ -77,6 +79,22 @@ class BankTest {
 
         when(vonKontoGesperrtMock.isGesperrt()).thenReturn(true);
         when(nachKontoGesperrtMock.isGesperrt()).thenReturn(true);
+
+        //Erstellen einer Mock Fabrik
+        mockFabrikVonKonto = mock(KontoFabrik.class);
+        mockFabrikNachKonto = mock(KontoFabrik.class);
+        mockFabrikVonKontoNichtUeberweisungsfaehig = mock(KontoFabrik.class);
+        mockFabrikNachKontoNichtUeberweisungsfaehig = mock(KontoFabrik.class);
+        mockFabrikVonKontoGesperrt = mock(KontoFabrik.class);
+        mockFabrikNachKontoGesperrt = mock(KontoFabrik.class);
+
+        //Definieren des Verhaltens der Mock Fabrik
+        when(mockFabrikVonKonto.kontoErstellen(any(Kunde.class), anyLong())).thenReturn(vonKontoMock);
+        when(mockFabrikNachKonto.kontoErstellen(any(Kunde.class), anyLong())).thenReturn(nachKontoMock);
+        when(mockFabrikVonKontoNichtUeberweisungsfaehig.kontoErstellen(any(Kunde.class), anyLong())).thenReturn(vonKontoNichtUeberweisungsfaehigMock);
+        when(mockFabrikNachKontoNichtUeberweisungsfaehig.kontoErstellen(any(Kunde.class), anyLong())).thenReturn(nachKontoNichtUeberweisungsfaehigMock);
+        when(mockFabrikVonKontoGesperrt.kontoErstellen(any(Kunde.class), anyLong())).thenReturn(vonKontoGesperrtMock);
+        when(mockFabrikNachKontoGesperrt.kontoErstellen(any(Kunde.class), anyLong())).thenReturn(nachKontoGesperrtMock);
 
     }
 
@@ -133,8 +151,8 @@ class BankTest {
         String verwendungszweck = "Testüberweisung";
 
         // Hinzufügen der Mock-Konten zur Bank
-        long vonKontonr = bank.mockEinfuegen(vonKontoMock);
-        long nachKontonr = bank.mockEinfuegen(nachKontoMock);
+        long vonKontonr = bank.kontoErstellen(mockFabrikVonKonto, dummy);
+        long nachKontonr = bank.kontoErstellen(mockFabrikNachKonto, dummy2);
 
         // Definieren des Verhaltens der Mock-Objekte
         when(vonKontoMock.getKontonummer()).thenReturn(vonKontonr);
@@ -164,8 +182,8 @@ class BankTest {
         String verwendungszweck = "Testüberweisung";
 
         // Hinzufügen der Mock-Konten zur Bank
-        long vonKontonr = bank.mockEinfuegen(vonKontoMock);
-        long nachKontonr = bank.mockEinfuegen(nachKontoMock);
+        long vonKontonr = bank.kontoErstellen(mockFabrikVonKonto, dummy);
+        long nachKontonr = bank.kontoErstellen(mockFabrikNachKonto, dummy2);
 
         // Definieren des Verhaltens der Mock-Objekte
         when(vonKontoMock.getKontonummer()).thenReturn(vonKontonr);
@@ -193,8 +211,8 @@ class BankTest {
         String verwendungszweck = "Testüberweisung";
 
         // Hinzufügen der Mock-Konten zur Bank
-        long vonKontonr = bank.mockEinfuegen(vonKontoMock);
-        long nachKontonr = bank.mockEinfuegen(nachKontoMock);
+        long vonKontonr = bank.kontoErstellen(mockFabrikVonKonto, dummy);
+        long nachKontonr = bank.kontoErstellen(mockFabrikNachKonto, dummy2);
 
         // Definieren des Verhaltens der Mock-Objekte
         when(vonKontoMock.getKontonummer()).thenReturn(vonKontonr);
@@ -224,10 +242,10 @@ class BankTest {
         String verwendungszweck = "Testüberweisung";
 
         // Hinzufügen der Mock-Konten zur Bank
-        long vonKontonr = bank.mockEinfuegen(vonKontoMock);
-        long nachKontonr = bank.mockEinfuegen(nachKontoMock);
-        long vonKontoNichtUeberweisungsfaehig1 = bank.mockEinfuegen(vonKontoNichtUeberweisungsfaehigMock);
-        long nachKontoNichtUeberweisungsfaehig2 = bank.mockEinfuegen(nachKontoNichtUeberweisungsfaehigMock);
+        long vonKontonr = bank.kontoErstellen(mockFabrikVonKonto, dummy);
+        long nachKontonr = bank.kontoErstellen(mockFabrikNachKonto, dummy2);
+        long vonKontoNichtUeberweisungsfaehig1 = bank.kontoErstellen(mockFabrikVonKontoNichtUeberweisungsfaehig, dummy3);
+        long nachKontoNichtUeberweisungsfaehig2 = bank.kontoErstellen(mockFabrikNachKontoNichtUeberweisungsfaehig, dummy4);
 
         // Definieren des Verhaltens der Mock-Objekte
         when(vonKontoMock.getKontonummer()).thenReturn(vonKontonr);
@@ -258,10 +276,10 @@ class BankTest {
         String verwendungszweck = "Testüberweisung";
 
         // Hinzufügen der Mock-Konten zur Bank
-        long vonKontonr = bank.mockEinfuegen(vonKontoMock);
-        long nachKontonr = bank.mockEinfuegen(nachKontoMock);
-        long vonKontoGesperrtNr = bank.mockEinfuegen(vonKontoGesperrtMock);
-        long nachKontoGesperrtNr = bank.mockEinfuegen(nachKontoGesperrtMock);
+        long vonKontonr = bank.kontoErstellen(mockFabrikVonKonto, dummy);
+        long nachKontonr = bank.kontoErstellen(mockFabrikNachKonto, dummy2);
+        long vonKontoGesperrtNr = bank.kontoErstellen(mockFabrikVonKontoGesperrt, dummy5);
+        long nachKontoGesperrtNr = bank.kontoErstellen(mockFabrikNachKontoGesperrt, dummy6);
 
         // Definieren des Verhaltens der Mock-Objekte
         when(vonKontoMock.getKontonummer()).thenReturn(vonKontonr);
@@ -292,7 +310,7 @@ class BankTest {
     @Test
     void testKontoLoeschenTrue() {
         //Vorbereiten der Testdaten
-        long kontonr = bank.mockEinfuegen(vonKontoMock);
+        long kontonr = bank.kontoErstellen(mockFabrikVonKonto, dummy);
         when(vonKontoMock.getKontonummer()).thenReturn(kontonr);
 
         //Durchführen des Tests
@@ -309,7 +327,7 @@ class BankTest {
     @Test
     void testKontoLoeschenFalse() {
         //Vorbereiten der Testdaten
-        long kontonr = bank.mockEinfuegen(vonKontoMock);
+        long kontonr = bank.kontoErstellen(mockFabrikVonKonto, dummy);
         when(vonKontoMock.getKontonummer()).thenReturn(kontonr);
 
         //Durchführen des Tests
@@ -325,8 +343,8 @@ class BankTest {
     @Test
     void testPleitegeierSperren() throws GesperrtException {
         //Vorbereiten der Testdaten
-        long kontonr = bank.mockEinfuegen(vonKontoMock);
-        long kontonr2 = bank.mockEinfuegen(nachKontoMock);
+        long kontonr = bank.kontoErstellen(mockFabrikVonKonto, dummy);
+        long kontonr2 = bank.kontoErstellen(mockFabrikNachKonto, dummy2);
         when(vonKontoMock.getKontonummer()).thenReturn(kontonr);
         when(nachKontoMock.getKontonummer()).thenReturn(kontonr2);
         when(nachKontoMock.getKontostand()).thenReturn(-100.00);
@@ -344,8 +362,8 @@ class BankTest {
     @Test
     void testGetKundenMitVollemKonto() {
         //Vorbereiten der Testdaten
-        long kontonr = bank.mockEinfuegen(vonKontoMock);
-        long kontonr2 = bank.mockEinfuegen(nachKontoMock);
+        long kontonr = bank.kontoErstellen(mockFabrikVonKonto, dummy);
+        long kontonr2 = bank.kontoErstellen(mockFabrikNachKonto, dummy2);
         when(vonKontoMock.getKontonummer()).thenReturn(kontonr);
         when(nachKontoMock.getKontonummer()).thenReturn(kontonr2);
         when(nachKontoMock.getKontostand()).thenReturn(100.00);
@@ -366,8 +384,8 @@ class BankTest {
     @Test
     void testGetKundenadressen() {
         //Vorbereiten der Testdaten
-        long kontonr = bank.mockEinfuegen(vonKontoMock);
-        long kontonr2 = bank.mockEinfuegen(nachKontoMock);
+        long kontonr = bank.kontoErstellen(mockFabrikVonKonto, dummy);
+        long kontonr2 = bank.kontoErstellen(mockFabrikNachKonto, dummy2);
         when(vonKontoMock.getKontonummer()).thenReturn(kontonr);
         when(nachKontoMock.getKontonummer()).thenReturn(kontonr2);
         when(nachKontoMock.getKontostand()).thenReturn(100.00);
@@ -388,10 +406,10 @@ class BankTest {
     @Test
     void testGetKontonummernLuecken() {
         //Vorbereiten der Testdaten
-        long kontonr = bank.mockEinfuegen(vonKontoMock);
-        long kontonr2 = bank.mockEinfuegen(nachKontoMock);
-        long kontonr3 = bank.mockEinfuegen(vonKontoMock);
-        long kontonr4 = bank.mockEinfuegen(nachKontoMock);
+        long kontonr = bank.kontoErstellen(mockFabrikVonKonto, dummy);
+        long kontonr2 = bank.kontoErstellen(mockFabrikNachKonto, dummy2);
+        long kontonr3 = bank.kontoErstellen(mockFabrikVonKonto, dummy);
+        long kontonr4 = bank.kontoErstellen(mockFabrikNachKonto, dummy2);
         when(vonKontoMock.getKontonummer()).thenReturn(kontonr);
         when(nachKontoMock.getKontonummer()).thenReturn(kontonr2);
         when(vonKontoMock.getKontonummer()).thenReturn(kontonr3);
