@@ -1,5 +1,6 @@
 package bankprojekt.verarbeitung;
 
+import bankprojekt.sprachsteuerung.SprachAuswahl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * Testklasse für die Klasse Konto.
  */
 class KontoTest {
-
     Konto giro = new Girokonto(new Kunde("Max", "Mustermann", "Musterstrasse", LocalDate.parse("1976-07-13")), 1234567, 1000);
     Konto spar = new Sparbuch(new Kunde("Max", "Mustermann", "Musterstrasse", LocalDate.parse("1976-07-13")), 1234567);
 

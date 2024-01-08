@@ -1,5 +1,8 @@
 package bankprojekt.verarbeitung;
 
+import bankprojekt.sprachsteuerung.SprachAuswahl;
+import bankprojekt.sprachsteuerung.Sprache;
+
 import java.io.Serial;
 import java.time.LocalDate;
 
@@ -33,6 +36,7 @@ public class Sparbuch extends Konto {
      * Monat und Jahr der letzten Abhebung
      */
     private LocalDate zeitpunkt = LocalDate.now();
+    private Sprache sprache = SprachAuswahl.getSprachFabrik().erstelleSprache();
 
     /**
      * ein Standard-Sparbuch
@@ -55,9 +59,9 @@ public class Sparbuch extends Konto {
 
     @Override
     public String toString() {
-        String ausgabe = "-- SPARBUCH --" + System.lineSeparator() +
+        String ausgabe = sprache.getSparbuchBeschreibung() + System.lineSeparator() +
                 super.toString()
-                + "Zinssatz: " + this.zinssatz * 100 + "%" + System.lineSeparator();
+                + sprache.getZinssatzBeschreibung() + this.zinssatz * 100 + "%" + System.lineSeparator();
         return ausgabe;
     }
 

@@ -14,7 +14,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>21</maven.compiler.release>
-        <start>AktienSpielereien</start>
+        <start>SprachSpielereien</start>
     </properties>
 
     <dependencies>

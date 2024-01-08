@@ -1,5 +1,8 @@
 package bankprojekt.verarbeitung;
 
+import bankprojekt.sprachsteuerung.SprachAuswahl;
+import bankprojekt.sprachsteuerung.Sprache;
+
 import java.io.Serial;
 
 /**
@@ -18,6 +21,8 @@ public class Girokonto extends Konto implements Ueberweisungsfaehig {
      * Wert, bis zu dem das Konto überzogen werden darf
      */
     private double dispo;
+
+    private Sprache sprache = SprachAuswahl.getSprachFabrik().erstelleSprache();
 
     /**
      * erzeugt ein leeres, nicht gesperrtes Standard-Girokonto
@@ -89,9 +94,9 @@ public class Girokonto extends Konto implements Ueberweisungsfaehig {
 
     @Override
     public String toString() {
-        String ausgabe = "-- GIROKONTO --" + System.lineSeparator() +
+        String ausgabe = sprache.getGirokontoBeschreibung() + System.lineSeparator() +
                 super.toString()
-                + "Dispo: " + this.dispo + System.lineSeparator();
+                + sprache.getDispoBeschreibung() + this.dispo + System.lineSeparator();
         return ausgabe;
     }
 
