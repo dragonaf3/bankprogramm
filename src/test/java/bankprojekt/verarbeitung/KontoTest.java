@@ -1,6 +1,5 @@
 package bankprojekt.verarbeitung;
 
-import bankprojekt.sprachsteuerung.SprachAuswahl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
