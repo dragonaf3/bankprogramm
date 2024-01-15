@@ -16,11 +16,10 @@ public class Bank implements Cloneable, Serializable {
      * Standard-Dispo für ein Girokonto, welche von der Bank vorgegeben ist
      */
     public static final double STANDARD_DISPO = 1000;
-    private final long bankleitzahl;
-    private final Map<Long, Konto> kontenListe;
     @Serial
     private static final long serialVersionUID = 1L;
-
+    private final long bankleitzahl;
+    private final Map<Long, Konto> kontenListe;
 
     /**
      * Erzeugt eine neue Bank mit der angegebenen Bankleitzahl.
