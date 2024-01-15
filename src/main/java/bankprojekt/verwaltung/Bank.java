@@ -20,6 +20,7 @@ public class Bank implements Cloneable, Serializable {
     private static final long serialVersionUID = 1L;
     private final long bankleitzahl;
     private final Map<Long, Konto> kontenListe;
+    private Map<Long, KontoBenachrichtigung> propertyChangeListeners = new HashMap<>();
 
     /**
      * Erzeugt eine neue Bank mit der angegebenen Bankleitzahl.
@@ -51,6 +52,7 @@ public class Bank implements Cloneable, Serializable {
 
     /**
      * Erstellt ein neues Konto für einen gegebenen Kunden und fügt es zur Kontenliste der Bank hinzu.
+     * Zusätzlich wird ein propertyChangeListener angemeldet.
      *
      * @param kontoFabrik Die Fabrik, die zur Erstellung des Kontos verwendet wird.
      * @param inhaber     Der Kunde, für den das Konto erstellt wird.
@@ -64,6 +66,11 @@ public class Bank implements Cloneable, Serializable {
         long neueKontonummer = erstelleNeueKontonummer();
         Konto neuesKonto = kontoFabrik.kontoErstellen(inhaber, neueKontonummer);
         kontenListe.put(neueKontonummer, neuesKonto);
+
+        KontoBenachrichtigung kontoBenachrichtigung = new KontoBenachrichtigung();
+        neuesKonto.anmelden(kontoBenachrichtigung);
+        propertyChangeListeners.put(neueKontonummer, kontoBenachrichtigung);
+
         return neueKontonummer;
     }
 
@@ -117,12 +124,18 @@ public class Bank implements Cloneable, Serializable {
 
     /**
      * Löscht das Konto mit der angegebenen Kontonummer.
+     * Zusätzlich wird der propertyChangeListeners wieder abgemeldet.
      *
      * @param nummer Kontonummer des Kontos, welches gelöscht werden soll
      * @return true, wenn das Konto erfolgreich gelöscht wurde, sonst false
      */
     public boolean kontoLoeschen(long nummer) {
         if (kontenListe.containsKey(nummer)) {
+            Konto konto = kontenListe.get(nummer);
+            KontoBenachrichtigung kontoBenachrichtigung = propertyChangeListeners.get(nummer);
+            konto.abmelden(kontoBenachrichtigung);
+            propertyChangeListeners.remove(kontoBenachrichtigung);
+
             kontenListe.remove(nummer);
             return true;
         }

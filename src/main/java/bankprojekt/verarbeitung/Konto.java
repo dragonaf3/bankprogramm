@@ -2,6 +2,8 @@ package bankprojekt.verarbeitung;
 
 import com.google.common.primitives.Doubles;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -49,19 +51,29 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
     private final ReentrantLock transaktionAktienLock = new ReentrantLock();
 
     /**
-     * setzt den aktuellen Kontostand
-     *
-     * @param kontostand neuer Kontostand
-     */
-    protected void setKontostand(double kontostand) {
-        this.kontostand = kontostand;
-    }
-
-    /**
      * Wenn das Konto gesperrt ist (gesperrt = true), können keine Aktionen daran mehr vorgenommen werden,
      * die zum Schaden des Kontoinhabers wären (abheben, Inhaberwechsel)
      */
     private boolean gesperrt;
+    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
+    /**
+     * meldet einen PropertyChangeListener an
+     *
+     * @param propertyChangeListener neuer PropertyChangeListener
+     */
+    public void anmelden(PropertyChangeListener propertyChangeListener) {
+        propertyChangeSupport.addPropertyChangeListener(propertyChangeListener);
+    }
+
+    /**
+     * meldet einen PropertyChangeListener ab
+     *
+     * @param propertyChangeListener PropertyChangeListener, der abgemeldet werden soll
+     */
+    public void abmelden(PropertyChangeListener propertyChangeListener) {
+        propertyChangeSupport.removePropertyChangeListener(propertyChangeListener);
+    }
 
     /**
      * Setzt die beiden Eigenschaften kontoinhaber und kontonummer auf die angegebenen Werte,
@@ -117,6 +129,17 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
      */
     public final double getKontostand() {
         return kontostand;
+    }
+
+    /**
+     * setzt den aktuellen Kontostand und löst eine firePropertyChange aus
+     *
+     * @param kontostand neuer Kontostand
+     */
+    protected void setKontostand(double kontostand) {
+        double kontostandAlt = this.kontostand;
+        this.kontostand = kontostand;
+        propertyChangeSupport.firePropertyChange("Kontostand Änderung", kontostandAlt, this.kontostand);
     }
 
     /**
