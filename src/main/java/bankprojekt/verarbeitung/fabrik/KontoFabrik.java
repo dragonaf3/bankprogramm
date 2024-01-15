@@ -15,6 +15,7 @@ public abstract class KontoFabrik {
      * @param inhaber     Der Kunde, der das Konto besitzen wird.
      * @param kontonummer Die Kontonummer des zu erstellenden Kontos.
      * @return Das erstellte Konto.
+     * @throws IllegalArgumentException wenn der Inhaber null ist.
      */
-    public abstract Konto kontoErstellen(Kunde inhaber, long kontonummer);
+    public abstract Konto kontoErstellen(Kunde inhaber, long kontonummer) throws IllegalArgumentException;
 }

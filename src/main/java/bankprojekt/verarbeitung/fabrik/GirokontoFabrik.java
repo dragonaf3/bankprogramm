@@ -18,9 +18,10 @@ public class GirokontoFabrik extends KontoFabrik {
      * @param inhaber     Der Inhaber des Kontos.
      * @param kontonummer Die Kontonummer des Kontos.
      * @return Ein neues Girokonto mit dem gegebenen Inhaber und der Kontonummer.
+     * @throws IllegalArgumentException wenn der Inhaber null ist.
      */
     @Override
-    public Konto kontoErstellen(Kunde inhaber, long kontonummer) {
+    public Konto kontoErstellen(Kunde inhaber, long kontonummer) throws IllegalArgumentException {
         return new Girokonto(inhaber, kontonummer, STANDARD_DISPO);
     }
 }

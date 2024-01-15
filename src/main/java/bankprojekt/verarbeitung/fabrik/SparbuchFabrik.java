@@ -16,9 +16,10 @@ public class SparbuchFabrik extends KontoFabrik {
      * @param inhaber     Der Inhaber des Kontos.
      * @param kontonummer Die Kontonummer des Kontos.
      * @return Ein neues Sparbuch-Objekt.
+     * @throws IllegalArgumentException wenn der Inhaber null ist.
      */
     @Override
-    public Konto kontoErstellen(Kunde inhaber, long kontonummer) {
+    public Konto kontoErstellen(Kunde inhaber, long kontonummer) throws IllegalArgumentException {
         return new Sparbuch(inhaber, kontonummer);
     }
 }

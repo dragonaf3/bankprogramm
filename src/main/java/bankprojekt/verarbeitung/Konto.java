@@ -203,7 +203,7 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
         // Überprüfen, ob der Betrag gültig ist
         validiereBetrag(betrag);
         // Überprüfen, ob das Konto gesperrt ist
-        istGesperrt();
+        ueberpruefeObKontoGesperrt();
 
         if (darfAbheben(betrag)) {
             hebtAb(betrag);
@@ -253,7 +253,7 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
      *
      * @throws GesperrtException wenn das Konto gesperrt ist.
      */
-    private void istGesperrt() throws GesperrtException {
+    private void ueberpruefeObKontoGesperrt() throws GesperrtException {
         if (this.isGesperrt()) {
             throw new GesperrtException(this.getKontonummer());
         }
