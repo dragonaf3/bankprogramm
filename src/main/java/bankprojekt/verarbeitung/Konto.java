@@ -1,6 +1,7 @@
 package bankprojekt.verarbeitung;
 
 import com.google.common.primitives.Doubles;
+import javafx.beans.property.*;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -55,6 +56,9 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
      * die zum Schaden des Kontoinhabers wären (abheben, Inhaberwechsel)
      */
     private boolean gesperrt;
+    private transient DoubleProperty kontostandProperty;
+    private transient BooleanProperty gesperrtProperty;
+    private transient BooleanProperty imPlusProperty;
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     /**
@@ -90,6 +94,10 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
         this.kontostand = 0;
         this.gesperrt = false;
         this.waehrung = Waehrung.EUR;
+
+        kontostandProperty = new SimpleDoubleProperty();
+        gesperrtProperty = new SimpleBooleanProperty();
+        imPlusProperty = new SimpleBooleanProperty();
     }
 
     /**
@@ -132,13 +140,19 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
     }
 
     /**
-     * setzt den aktuellen Kontostand und löst eine firePropertyChange aus
+     * setzt den aktuellen Kontostand und löst eine firePropertyChange aus. Setzt zusätzlich die KontostandProperty.
      *
      * @param kontostand neuer Kontostand
      */
     protected void setKontostand(double kontostand) {
         double kontostandAlt = this.kontostand;
         this.kontostand = kontostand;
+
+        if (this.kontostandProperty != null) {
+            this.kontostandProperty.set(kontostand);
+            updateImPlusProperty();
+        }
+
         propertyChangeSupport.firePropertyChange("Kontostand Änderung", kontostandAlt, this.kontostand);
     }
 
@@ -176,6 +190,54 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
      */
     public final boolean isGesperrt() {
         return gesperrt;
+    }
+
+    /**
+     * Gibt die Kontostand-Property zurück.
+     * Diese Methode gibt eine ReadOnlyDoubleProperty zurück, die den aktuellen Kontostand repräsentiert.
+     * Andere Klassen können diese Property verwenden, um auf Änderungen des Kontostands zu reagieren,
+     * können den Kontostand jedoch nicht ändern.
+     *
+     * @return die Kontostand-Property
+     */
+    public ReadOnlyDoubleProperty kontostandProperty() {
+        return kontostandProperty;
+    }
+
+    /**
+     * Gibt die gesperrtProperty zurück.
+     * Diese Methode gibt eine ReadOnlyBooleanProperty zurück, die den gesperrten Zustand des Kontos repräsentiert.
+     * Andere Klassen können diese Eigenschaft verwenden, um auf Änderungen des gesperrten Zustands zu reagieren,
+     * können den gesperrten Zustand jedoch nicht ändern.
+     *
+     * @return die gesperrtProperty
+     */
+    public ReadOnlyBooleanProperty gesperrtProperty() {
+        return gesperrtProperty;
+    }
+
+    private void setGesperrtProperty(boolean gesperrt) {
+        this.gesperrtProperty.set(gesperrt);
+    }
+
+    /**
+     * Gibt die imPlusProperty zurück.
+     * Diese Methode gibt eine ReadOnlyBooleanProperty zurück, die den Zustand des Kontos repräsentiert.
+     * Andere Klassen können diese Eigenschaft verwenden, um auf Änderungen des Zustands zu reagieren,
+     * können den Zustand jedoch nicht ändern.
+     *
+     * @return die imPlusProperty
+     */
+    public ReadOnlyBooleanProperty imPlusProperty() {
+        return imPlusProperty;
+    }
+
+    private void setImPlusProperty(boolean imPlus) {
+        this.imPlusProperty.set(imPlus);
+    }
+
+    private void updateImPlusProperty() {
+        setImPlusProperty(getKontostand() >= 0);
     }
 
     /**
@@ -318,17 +380,19 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
     }
 
     /**
-     * sperrt das Konto, Aktionen zum Schaden des Benutzers sind nicht mehr möglich.
+     * sperrt das Konto, Aktionen zum Schaden des Benutzers sind nicht mehr möglich. Setzt zusätzlich die gesperrtProperty.
      */
     public final void sperren() {
         this.gesperrt = true;
+        setGesperrtProperty(true);
     }
 
     /**
-     * entsperrt das Konto, alle Kontoaktionen sind wieder möglich.
+     * entsperrt das Konto, alle Kontoaktionen sind wieder möglich. Setzt zusätzlich die gesperrtProperty.
      */
     public final void entsperren() {
         this.gesperrt = false;
+        setGesperrtProperty(false);
     }
 
 
